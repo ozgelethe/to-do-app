@@ -1,3 +1,5 @@
+from django.forms.models import BaseModelForm
+from django.http import HttpResponse
 from django.shortcuts import render
 from django.views.generic.list import ListView
 from django.views.generic.detail import DetailView
@@ -40,12 +42,17 @@ class TaskDetail(LoginRequiredMixin, DetailView):
 
 class TaskCreate(LoginRequiredMixin, CreateView):
     model = Task
-    fields = '__all__'
+    fields = ['title', 'description', 'complete']
     success_url = reverse_lazy('tasks')
+
+    def form_invalid(self, form):
+        form.instance.user = self.request.user
+        return super(TaskCreate, self).form_valid(form)
+
 
 class TaskUpdate(LoginRequiredMixin, UpdateView):
     model = Task
-    fields = '__all__'
+    fields = ['title', 'description', 'complete']
     success_url = reverse_lazy('tasks')
 
 class DeleteView(LoginRequiredMixin, DeleteView):
